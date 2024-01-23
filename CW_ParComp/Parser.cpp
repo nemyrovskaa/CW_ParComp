@@ -3,6 +3,7 @@
 Parser::Parser(string directoryPath)
 {
 	this->directoryPath = directoryPath;
+	this->stopWords = new set<string>();
 
 	string filePath = "I:\\university\\4-course-1-term\\course_work\\stop_words.txt";
 
@@ -12,7 +13,7 @@ Parser::Parser(string directoryPath)
 
 	string word;
 	while (getline(file, word))
-		stopWords.insert(word);
+		stopWords->insert(word);
 
 	if (file.is_open())
 		file.close();
@@ -20,7 +21,7 @@ Parser::Parser(string directoryPath)
 
 Parser::~Parser()
 {
-
+	delete(stopWords);
 }
 
 map<string, set<string>> Parser::mapTerms()
@@ -74,7 +75,7 @@ void Parser::parseText(map<string, set<string>>& terms, string str, string fileP
 		string token = str.substr(start, end - start);
 		toLowerCase(token);
 		removeSpecialChars(token);
-		if (token.size() != 0 && !stopWords.contains(token))
+		if (token.size() != 0 && !stopWords->contains(token))
 		{
 			if (terms.contains(token))
 				terms.find(token)->second.insert(filePath);
@@ -142,7 +143,7 @@ void Parser::toLowerCase(string& str) {
 	}
 }
 
-void Parser::removeSpecialChars(string& str)	//--------------------------------- TODO
+void Parser::removeSpecialChars(string& str)
 {
 	int i = 0;
 	while (i < str.size()) {
@@ -163,13 +164,8 @@ void Parser::removeSpecialChars(string& str)	//---------------------------------
 	i = 0;
 	while (i < str.size()) {
 		if (str[i] == 39 && (i == 0 || i == str.size() - 1))
-		{
 			str.erase(i, 1);
-		}
 		else
-		{
 			i++;
-		}
-
 	}
 }

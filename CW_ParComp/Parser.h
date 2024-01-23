@@ -14,7 +14,7 @@ class Parser
 {
 private:
 	string directoryPath;
-	set<string> stopWords;
+	set<string>* stopWords;
 
 	void mapTerms(map<string, set<string>>&, string);
 	void parseText(map<string, set<string>>&, string, string);
