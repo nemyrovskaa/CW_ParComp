@@ -142,10 +142,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CW_ParComp.cpp" />
+    <ClCompile Include="InvertedIndex.cpp" />
     <ClCompile Include="Inverter.cpp" />
     <ClCompile Include="Parser.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="InvertedIndex.h" />
     <ClInclude Include="Inverter.h" />
     <ClInclude Include="Parser.h" />
   </ItemGroup>

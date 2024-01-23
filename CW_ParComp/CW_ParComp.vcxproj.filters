@@ -24,12 +24,18 @@
     <ClCompile Include="Inverter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="InvertedIndex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Parser.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Inverter.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InvertedIndex.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
