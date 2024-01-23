@@ -24,8 +24,10 @@ private:
 	void removeSpecialChars(string&);
 
 public:
+	Parser();
 	Parser(string);
 	~Parser();
 
+	void normalizeWord(string&);
 	map<string, set<string>> mapTerms();
 };

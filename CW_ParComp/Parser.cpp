@@ -1,5 +1,10 @@
 #include "Parser.h"
 
+Parser::Parser()
+{
+
+}
+
 Parser::Parser(string directoryPath)
 {
 	this->directoryPath = directoryPath;
@@ -58,6 +63,12 @@ void Parser::mapTerms(map<string, set<string>>& tokens, string directoryPath)
 				file.close();
 		}
 	}
+}
+
+void Parser::normalizeWord(string& str)
+{
+	toLowerCase(str);
+	removeSpecialChars(str);
 }
 
 void Parser::parseText(map<string, set<string>>& terms, string str, string filePath)
