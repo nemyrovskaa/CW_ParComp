@@ -44,3 +44,5 @@ map<string, set<string>>& Inverter::getTerms()
 {
 	return *this->terms;
 }
+
+
