@@ -8,16 +8,18 @@
 #include <set>
 #include <map>
 
+#include "Task.h"
+
 using namespace std;
 
-class Parser
+class Parser : public Task
 {
 private:
-	string directoryPath;
+	vector<string> filePaths;
 	set<string>* stopWords;
+	map<string, set<string>>* terms;
 
-	void mapTerms(map<string, set<string>>&, string);
-	void parseText(map<string, set<string>>&, string, string);
+	void parseText(string, string);
 
 	void toLowerCase(string&);
 	void removeTags(string&);
@@ -25,9 +27,16 @@ private:
 
 public:
 	Parser();
-	Parser(string);
+	Parser(vector<string>);
 	~Parser();
 
 	void normalizeWord(string&);
-	map<string, set<string>> mapTerms();
+	void mapTerms();
+	map<string, set<string>>& getTerms();
+	void do_work() override
+	{
+		set_status(Status::IS_PROCESSING);
+		mapTerms();
+		set_status(Status::EXECUTED);
+	}
 };

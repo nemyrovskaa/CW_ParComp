@@ -5,10 +5,11 @@ Parser::Parser()
 
 }
 
-Parser::Parser(string directoryPath)
+Parser::Parser(vector<string> filePaths)
 {
-	this->directoryPath = directoryPath;
+	this->filePaths = filePaths;
 	this->stopWords = new set<string>();
+	this->terms = new map<string, set<string>>();
 
 	string filePath = "I:\\university\\4-course-1-term\\course_work\\stop_words.txt";
 
@@ -26,42 +27,25 @@ Parser::Parser(string directoryPath)
 
 Parser::~Parser()
 {
+	delete(terms);
 	delete(stopWords);
 }
 
-map<string, set<string>> Parser::mapTerms()
+void Parser::mapTerms()
 {
-	map<string, set<string>> tokens;
+	for (auto filePath : filePaths) {
+		ifstream file(filePath);
+		if (!file)
+			throw invalid_argument("Something went wrong while opening the file " + filePath);
 
-	mapTerms(tokens, this->directoryPath);
+		stringstream fileSS;
+		fileSS << file.rdbuf();
+		string fileContent = fileSS.str();
 
-	return tokens;
-}
+		parseText(fileContent, filePath);
 
-void Parser::mapTerms(map<string, set<string>>& tokens, string directoryPath)
-{
-	for (const auto& entry : filesystem::directory_iterator(directoryPath)) {
-		string filePath = entry.path().string();
-
-		if (entry.is_directory())
-		{
-			mapTerms(tokens, directoryPath + "\\" + entry.path().filename().string());
-		}
-		else
-		{
-			ifstream file(filePath);
-			if (!file)
-				throw invalid_argument("Something went wrong while opening the file " + filePath);
-
-			stringstream fileSS;
-			fileSS << file.rdbuf();
-			string fileContent = fileSS.str();
-
-			parseText(tokens, fileContent, filePath);
-
-			if (file.is_open())
-				file.close();
-		}
+		if (file.is_open())
+			file.close();
 	}
 }
 
@@ -71,7 +55,7 @@ void Parser::normalizeWord(string& str)
 	removeSpecialChars(str);
 }
 
-void Parser::parseText(map<string, set<string>>& terms, string str, string filePath)
+void Parser::parseText(string str, string filePath)
 {
 	removeTags(str);
 
@@ -88,13 +72,13 @@ void Parser::parseText(map<string, set<string>>& terms, string str, string fileP
 		removeSpecialChars(token);
 		if (token.size() != 0 && !stopWords->contains(token))
 		{
-			if (terms.contains(token))
-				terms.find(token)->second.insert(filePath);
+			if (terms->contains(token))
+				terms->find(token)->second.insert(filePath);
 			else
 			{
 				set<string> docs;
 				docs.insert(filePath);
-				terms.insert(make_pair(token, docs));
+				terms->insert(make_pair(token, docs));
 			}
 		}
 
@@ -158,17 +142,16 @@ void Parser::removeSpecialChars(string& str)
 {
 	int i = 0;
 	while (i < str.size()) {
-		if ((str[i] >= 33 && str[i] <= 38) ||
-			(str[i] >= 40 && str[i] <= 47) ||
-			(str[i] >= 58 && str[i] <= 64) ||
-			(str[i] >= 91 && str[i] <= 96) ||
-			(str[i] >= 123 && str[i] <= 126))
+		if ((str[i] >= 48 && str[i] <= 57) ||
+			(str[i] >= 65 && str[i] <= 90) ||
+			(str[i] >= 97 && str[i] <= 122) ||
+			(str[i] == 39))
 		{
-			str.erase(i, 1);
+			i++;
 		}
 		else
 		{
-			i++;
+			str.erase(i, 1);
 		}
 	}
 
@@ -179,4 +162,9 @@ void Parser::removeSpecialChars(string& str)
 		else
 			i++;
 	}
+}
+
+map<string, set<string>>& Parser::getTerms()
+{
+	return *this->terms;
 }
