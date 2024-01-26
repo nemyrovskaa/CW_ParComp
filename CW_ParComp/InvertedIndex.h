@@ -4,7 +4,6 @@
 #include <map>
 #include <set>
 #include <vector>
-
 #include <functional>
 
 #include "Parser.h"
@@ -17,14 +16,16 @@ class InvertedIndex
 {
 private:
 	string indexDir;
-	vector<Task*> tasks;
-	map<string, set<string>>* terms;
+	vector<char> alphabet;
+
 	ThreadPool* tp;
 	int parserThreadNum;
 	int inverterThreadNum;
 	bool stopPool;
 	condition_variable stopPoolVar;
-	vector<char> alphabet;
+
+	vector<Task*> tasks;
+	map<pair<char, char>, map<string, set<string>>>* terms;
 
 	struct Split {
 
@@ -33,18 +34,20 @@ private:
 
 		inline bool operator< (const Split& other) { return splitSize < other.splitSize; }
 	};
+
 	vector<vector<string>> splitDocs();
 	void splitDocs(vector<Split>&, string);
+
 	vector<pair<char, char>> splitAlphabet();
+	map<pair<char, char>, vector<map<string, set<string>>>> splitTerms();
+
+	void emptyPoolCallback();
 
 public:
 	InvertedIndex(string, int, int);
 	~InvertedIndex();
 
-
 	void buildIndex();
 	set<string> searchDocs(string);
-	map<string, set<string>>& getTerms();
-
-	void emptyPoolCallback();
+	map<pair<char, char>, map<string, set<string>>>& getTerms();
 };
