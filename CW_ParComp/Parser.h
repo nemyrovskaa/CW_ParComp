@@ -1,10 +1,8 @@
 #pragma once
 
 #include <iostream>
-#include <sstream>
 #include <fstream>
 #include <filesystem>
-#include <string>
 #include <set>
 #include <map>
 
@@ -14,29 +12,29 @@ using namespace std;
 
 class Parser : public Task
 {
-private:
-	vector<string> filePaths;
-	set<string>* stopWords;
-	map<string, set<string>>* terms;
-
-	void parseText(string, string);
-
-	void toLowerCase(string&);
-	void removeTags(string&);
-	void removeSpecialChars(string&);
-
 public:
 	Parser();
 	Parser(vector<string>);
 	~Parser();
 
-	void normalizeWord(string&);
-	void mapTerms();
+	void NormalizeWord(string&);
+	void MapTerms();
 	map<string, set<string>>& getTerms();
-	void do_work() override
+
+	void DoWork() override
 	{
-		set_status(Status::IS_PROCESSING);
-		mapTerms();
-		set_status(Status::EXECUTED);
+		setStatus(Status::kIsProcessing);
+		MapTerms();
+		setStatus(Status::kExecuted);
 	}
+
+private:
+	void ParseText(string, string);
+	void ToLowerCase(string&);
+	void RemoveTags(string&);
+	void RemoveSpecialChars(string&);
+
+	vector<string> m_file_paths;
+	set<string>* m_stop_words;
+	map<string, set<string>>* m_terms;
 };

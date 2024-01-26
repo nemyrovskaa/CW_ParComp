@@ -1,7 +1,6 @@
 #pragma once
 
 #include <iostream>
-#include <string>
 #include <chrono>
 #include <shared_mutex>
 
@@ -12,11 +11,26 @@ using namespace std;
 
 enum class Status
 {
-	IS_STORING, IGNORED, IS_PROCESSING, EXECUTED
+	kIsStoring, kIgnored, kIsProcessing, kExecuted
 };
 
 class Task
 {
+public:
+	Task();
+	Task(const Task&);
+	~Task();
+	virtual void DoWork();
+
+	Task& operator= (const Task&) { return *this; };
+	Task& operator= (const Task&&) { return *this; };
+
+	unsigned int getID();
+	string getString();
+	Status getStatus();
+	string getStatusStr();
+	void setStatus(Status);
+
 private:
 	static unsigned int s_ID;
 	unsigned int m_taskID;
@@ -26,22 +40,4 @@ private:
 	chrono::high_resolution_clock::time_point m_start_time;
 	chrono::high_resolution_clock::time_point m_end_time;
 	chrono::milliseconds m_result_time;
-	//shared_mutex m_rw_mutex;
-
-public:
-	//unsigned int val;
-
-	Task();
-	Task(const Task&);
-	~Task();
-	virtual void do_work();
-
-	unsigned int get_ID();
-	string get_string();
-	Status get_status();
-	string get_status_str();
-	void set_status(Status);
-
-	Task& operator= (const Task&) { return *this; };
-	Task& operator= (const Task&&) { return *this; };
 };

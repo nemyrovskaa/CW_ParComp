@@ -5,21 +5,21 @@ Parser::Parser()
 
 }
 
-Parser::Parser(vector<string> filePaths)
+Parser::Parser(vector<string> file_paths)
 {
-	this->filePaths = filePaths;
-	this->stopWords = new set<string>();
-	this->terms = new map<string, set<string>>();
+	m_file_paths = file_paths;
+	m_stop_words = new set<string>();
+	m_terms = new map<string, set<string>>();
 
-	string filePath = "I:\\university\\4-course-1-term\\course_work\\stop_words.txt";
+	string file_path = "I:\\university\\4-course-1-term\\course_work\\stop_words.txt";
 
-	ifstream file(filePath);
+	ifstream file(file_path);
 	if (!file)
-		throw invalid_argument("Something went wrong while opening the file " + filePath);
+		throw invalid_argument("Something went wrong while opening the file " + file_path);
 
 	string word;
 	while (getline(file, word))
-		stopWords->insert(word);
+		m_stop_words->insert(word);
 
 	if (file.is_open())
 		file.close();
@@ -27,40 +27,40 @@ Parser::Parser(vector<string> filePaths)
 
 Parser::~Parser()
 {
-	delete(terms);
-	delete(stopWords);
+	delete(m_terms);
+	delete(m_stop_words);
 }
 
-void Parser::mapTerms()
+void Parser::MapTerms()
 {
-	for (auto filePath : filePaths) {
-		ifstream file(filePath);
+	for (auto file_path : m_file_paths) {
+		ifstream file(file_path);
 		if (!file)
-			throw invalid_argument("Something went wrong while opening the file " + filePath);
+			throw invalid_argument("Something went wrong while opening the file " + file_path);
 
-		stringstream fileSS;
-		fileSS << file.rdbuf();
-		string fileContent = fileSS.str();
+		stringstream file_ss;
+		file_ss << file.rdbuf();
+		string file_content = file_ss.str();
 
-		parseText(fileContent, filePath);
+		ParseText(file_content, file_path);
 
 		if (file.is_open())
 			file.close();
 	}
 }
 
-void Parser::normalizeWord(string& str)
+void Parser::NormalizeWord(string& str)
 {
-	toLowerCase(str);
-	removeSpecialChars(str);
+	ToLowerCase(str);
+	RemoveSpecialChars(str);
 }
 
-void Parser::parseText(string str, string filePath)
+void Parser::ParseText(string str, string file_path)
 {
-	removeTags(str);
+	RemoveTags(str);
 
-	int start = 0;
-	int end = 0;
+	unsigned int start = 0;
+	unsigned int end = 0;
 	while (true)
 	{
 		while (str[start] == ' ')
@@ -68,17 +68,17 @@ void Parser::parseText(string str, string filePath)
 		end = str.find(" ", start);
 
 		string token = str.substr(start, end - start);
-		toLowerCase(token);
-		removeSpecialChars(token);
-		if (token.size() != 0 && !stopWords->contains(token))
+		ToLowerCase(token);
+		RemoveSpecialChars(token);
+		if (token.size() != 0 && !m_stop_words->contains(token))
 		{
-			if (terms->contains(token))
-				terms->find(token)->second.insert(filePath);
+			if (m_terms->contains(token))
+				m_terms->find(token)->second.insert(file_path);
 			else
 			{
 				set<string> docs;
-				docs.insert(filePath);
-				terms->insert(make_pair(token, docs));
+				docs.insert(file_path);
+				m_terms->insert(make_pair(token, docs));
 			}
 		}
 
@@ -89,58 +89,58 @@ void Parser::parseText(string str, string filePath)
 	}
 }
 
-void Parser::removeTags(string& str)
+void Parser::RemoveTags(string& str)
 {
-	string openTag;
-	string closeTag;
+	string open_tag;
+	string close_tag;
 
-	int searchFrom = 0;
-	int openBracePos = 0;
-	int closeBracePos = 0;
+	unsigned int search_from = 0;
+	unsigned int open_brace_pos = 0;
+	unsigned int close_brace_pos = 0;
 	while (true)
 	{
-		openBracePos = str.find("<", searchFrom);
-		closeBracePos = str.find(">", openBracePos);
+		open_brace_pos = str.find("<", search_from);
+		close_brace_pos = str.find(">", open_brace_pos);
 
-		if ((openBracePos == string::npos) || (closeBracePos == string::npos))
+		if ((open_brace_pos == string::npos) || (close_brace_pos == string::npos))
 		{
 			break;
 		}
 
-		string tagName = str.substr(openBracePos + 1, closeBracePos - (openBracePos + 1));
+		string tag_name = str.substr(open_brace_pos + 1, close_brace_pos - (open_brace_pos + 1));
 
-		openTag = "<" + tagName + ">";
-		closeTag = "</" + tagName + ">";
+		open_tag = "<" + tag_name + ">";
+		close_tag = "</" + tag_name + ">";
 
-		if (str.find(closeTag) == string::npos)
+		if (str.find(close_tag) == string::npos)
 		{
-			closeTag = openTag;
+			close_tag = open_tag;
 
-			if (str.find(closeTag, str.find(openTag) + openTag.size()) == string::npos)
+			if (str.find(close_tag, str.find(open_tag) + open_tag.size()) == string::npos)
 			{
-				searchFrom = openBracePos + 1;
+				search_from = open_brace_pos + 1;
 				continue;
 			}
 		}
 
-		str.insert(str.find(openTag), " ");
-		str.erase(str.find(openTag), openTag.size());
+		str.insert(str.find(open_tag), " ");
+		str.erase(str.find(open_tag), open_tag.size());
 
-		str.insert(str.find(closeTag), " ");
-		str.erase(str.find(closeTag), closeTag.size());
+		str.insert(str.find(close_tag), " ");
+		str.erase(str.find(close_tag), close_tag.size());
 	}
 }
 
-void Parser::toLowerCase(string& str) {
+void Parser::ToLowerCase(string& str) {
 
-	for (int i = 0; i < str.size(); i++) {
+	for (unsigned int i = 0; i < str.size(); i++) {
 		str[i] = tolower(str[i]);
 	}
 }
 
-void Parser::removeSpecialChars(string& str)
+void Parser::RemoveSpecialChars(string& str)
 {
-	int i = 0;
+	unsigned int i = 0;
 	while (i < str.size()) {
 		if ((str[i] >= 48 && str[i] <= 57) ||
 			(str[i] >= 65 && str[i] <= 90) ||
@@ -166,5 +166,5 @@ void Parser::removeSpecialChars(string& str)
 
 map<string, set<string>>& Parser::getTerms()
 {
-	return *this->terms;
+	return *m_terms;
 }

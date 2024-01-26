@@ -11,24 +11,23 @@ using namespace std;
 
 class Inverter : public Task
 {
-private:
-	vector<map<string, set<string>>>* termsVec;
-	map<string, set<string>>* terms;
-
 public:
-
 	Inverter();
 	Inverter(vector<map<string, set<string>>>);
 	~Inverter();
 
-	void addTerms(map<string, set<string>>&);
-	void reduseTerms();
+	void AddTerms(map<string, set<string>>&);
+	void ReduseTerms();
 	map<string, set<string>>& getTerms();
 
-	void do_work() override
+	void DoWork() override
 	{
-		set_status(Status::IS_PROCESSING);
-		reduseTerms();
-		set_status(Status::EXECUTED);
+		setStatus(Status::kIsProcessing);
+		ReduseTerms();
+		setStatus(Status::kExecuted);
 	}
+
+private:
+	vector<map<string, set<string>>>* m_terms_vec;
+	map<string, set<string>>* m_terms;
 };

@@ -14,40 +14,36 @@ using namespace std;
 
 class InvertedIndex
 {
-private:
-	string indexDir;
-	vector<char> alphabet;
-
-	ThreadPool* tp;
-	int parserThreadNum;
-	int inverterThreadNum;
-	bool stopPool;
-	condition_variable stopPoolVar;
-
-	vector<Task*> tasks;
-	map<pair<char, char>, map<string, set<string>>>* terms;
-
-	struct Split {
-
-		uintmax_t splitSize;
-		vector<string>* filePaths;
-
-		inline bool operator< (const Split& other) { return splitSize < other.splitSize; }
-	};
-
-	vector<vector<string>> splitDocs();
-	void splitDocs(vector<Split>&, string);
-
-	vector<pair<char, char>> splitAlphabet();
-	map<pair<char, char>, vector<map<string, set<string>>>> splitTerms();
-
-	void emptyPoolCallback();
-
 public:
-	InvertedIndex(string, int, int);
+	InvertedIndex(string, unsigned int, unsigned int);
 	~InvertedIndex();
 
-	void buildIndex();
-	set<string> searchDocs(string);
+	void BuildIndex();
+	set<string> SearchDocs(string);
 	map<pair<char, char>, map<string, set<string>>>& getTerms();
+
+private:
+	struct Split {
+
+		uintmax_t split_size;
+		vector<string>* file_paths;
+
+		inline bool operator< (const Split& other) { return split_size < other.split_size; }
+	};
+
+	vector<vector<string>> SplitDocs();
+	void SplitDocs(vector<Split>&, string);
+	vector<pair<char, char>> SplitAlphabet();
+	map<pair<char, char>, vector<map<string, set<string>>>> SplitTerms();
+	void EmptyPoolCallback();
+
+	string m_index_dir;
+	vector<char> m_alphabet;
+	ThreadPool* m_tp;
+	unsigned int m_parser_th_num;
+	unsigned int m_inverter_th_num;
+	bool m_stop_pool;
+	condition_variable m_stop_pool_var;
+	vector<Task*> m_tasks;
+	map<pair<char, char>, map<string, set<string>>>* m_terms;
 };

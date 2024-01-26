@@ -7,39 +7,39 @@ ThreadPool::ThreadPool()
 
 ThreadPool::~ThreadPool()
 {
-	break_safe();
+	BreakSafe();
 }
 
-void ThreadPool::init(function<void(void)> callback, int thread_num)
+void ThreadPool::Init(function<void(void)> callback, int thread_num)
 {
 	unique_lock<mutex> u_lock(m_rw_mutex);
-	if (m_initialised)
+	if (m_Initialised)
 		return;
 
 	this->callback = callback;
 
 	m_thread_num = thread_num < MAX_THREAD_NUM ? thread_num : MAX_THREAD_NUM;
-	m_break_execution = m_is_paused = false;
-	m_initialised = true;
+	m_break_execution = m_is_Paused = false;
+	m_Initialised = true;
 
 	m_threads.reserve(thread_num);
 	for (int i = 0; i < thread_num; i++)
-		m_threads.push_back(thread(&ThreadPool::routine, this));
+		m_threads.push_back(thread(&ThreadPool::Routine, this));
 
 	m_queue.set_max_size(MAX_Q_SIZE);
 }
 
-void ThreadPool::add_task(Task* task)
+void ThreadPool::AddTask(Task* task)
 {
 	if (!m_queue.push(task))
 	{
 		unique_lock<mutex> u_lock(m_rw_mutex);
-		task->set_status(Status::IGNORED);
+		task->setStatus(Status::kIgnored);
 	}
 	m_wait_for_task.notify_all();
 }
 
-void ThreadPool::routine()
+void ThreadPool::Routine()
 {
 	while (true)
 	{
@@ -50,7 +50,7 @@ void ThreadPool::routine()
 			if (m_queue.empty())
 				callback();
 
-			m_wait_for_task.wait(u_lock, [this] {return (!m_queue.empty() || m_break_execution) && !m_is_paused; });
+			m_wait_for_task.wait(u_lock, [this] {return (!m_queue.empty() || m_break_execution) && !m_is_Paused; });
 
 			if (m_break_execution)
 				return;
@@ -64,11 +64,11 @@ void ThreadPool::routine()
 				cout << e.what() << endl;
 			}
 		}
-		task->do_work();
+		task->DoWork();
 	}
 }
 
-void ThreadPool::break_safe()
+void ThreadPool::BreakSafe()
 {
 	{
 		unique_lock<mutex> u_lock(m_rw_mutex);
@@ -82,10 +82,10 @@ void ThreadPool::break_safe()
 
 	m_threads.clear();
 	m_queue.clear();
-	m_initialised = false;
+	m_Initialised = false;
 }
 
-void ThreadPool::break_momentary()
+void ThreadPool::BreakMomentary()
 {
 	{
 		unique_lock<mutex> u_lock(m_rw_mutex);
@@ -99,20 +99,20 @@ void ThreadPool::break_momentary()
 
 	m_threads.clear();
 	m_queue.clear();
-	m_initialised = false;
+	m_Initialised = false;
 }
 
-void ThreadPool::pause()
+void ThreadPool::Pause()
 {
-	unique_lock<mutex> u_lock(m_pause_mutex);
-	m_is_paused = true;
+	unique_lock<mutex> u_lock(m_Pause_mutex);
+	m_is_Paused = true;
 }
 
-void ThreadPool::resume()
+void ThreadPool::Resume()
 {
 	{
-		unique_lock<mutex> u_lock(m_pause_mutex);
-		m_is_paused = false;
+		unique_lock<mutex> u_lock(m_Pause_mutex);
+		m_is_Paused = false;
 	}
 	m_wait_for_task.notify_all();
 }

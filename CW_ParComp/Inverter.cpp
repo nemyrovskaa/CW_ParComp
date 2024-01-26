@@ -2,47 +2,47 @@
 
 Inverter::Inverter()
 {
-	this->terms = new map<string, set<string>>();
-	this->termsVec = new vector<map<string, set<string>>>();
+	m_terms = new map<string, set<string>>();
+	m_terms_vec = new vector<map<string, set<string>>>();
 }
 
-Inverter::Inverter(vector<map<string, set<string>>>* termsVec)
+Inverter::Inverter(vector<map<string, set<string>>> terms_vec)
 {
-	this->terms = new map<string, set<string>>();
-	this->termsVec = termsVec;
+	m_terms = new map<string, set<string>>();
+	m_terms_vec = new vector<map<string, set<string>>>(terms_vec);
 }
 
 Inverter::~Inverter()
 {
-	delete(terms);
-	delete(termsVec);
+	delete(m_terms);
+	delete(m_terms_vec);
 }
 
-void Inverter::addTerms(map<string, set<string>>& inTerms)
+void Inverter::AddTerms(map<string, set<string>>& inTerms)
 {
-	termsVec->push_back(inTerms);
+	m_terms_vec->push_back(inTerms);
 }
 
-void Inverter::reduseTerms()
+void Inverter::ReduseTerms()
 {
-	for (auto i : *termsVec)
+	for (auto i : *m_terms_vec)
 	{
-		if (terms->empty())
-			terms->insert(i.begin(), i.end());
+		if (m_terms->empty())
+			m_terms->insert(i.begin(), i.end());
 		else
 			for (auto term : i)
 			{
-				if (terms->contains(term.first))
-					terms->find(term.first)->second.merge(term.second);
+				if (m_terms->contains(term.first))
+					m_terms->find(term.first)->second.merge(term.second);
 				else
-					terms->insert(make_pair(term.first, term.second));
+					m_terms->insert(make_pair(term.first, term.second));
 			}
 	}
 }
 
 map<string, set<string>>& Inverter::getTerms()
 {
-	return *this->terms;
+	return *m_terms;
 }
 
 
