@@ -11,7 +11,7 @@ Parser::Parser(vector<string> file_paths)
 	m_stop_words = new set<string>();
 	m_terms = new map<string, set<string>>();
 
-	string file_path = "I:\\university\\4-course-1-term\\course_work\\stop_words.txt";
+	string file_path = "..\\resources\\stop_words.txt";
 
 	ifstream file(file_path);
 	if (!file)

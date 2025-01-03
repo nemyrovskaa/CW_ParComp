@@ -10,7 +10,7 @@ int main()
 {
     cout << "\t\tInverted Index" << endl;
 
-    string index_dir; // I:\\university\\4-course-1-term\\course_work\\dataset
+    string index_dir; // C:\\university\\4-course-1-term\\course_work\\dataset
     cout << "\nPlease, enter the path to directory:" << endl;
     cin >> index_dir;
 
